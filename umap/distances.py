@@ -38,7 +38,7 @@ def standardised_euclidean(x, y, sigma=_mock_ones):
 
 @numba.njit()
 def manhattan(x, y):
-    """Manhatten, taxicab, or l1 distance.
+    """Manhattan, taxicab, or l1 distance.
 
     ..math::
         D(x, y) = \sum_i |x_i - y_i|
@@ -99,6 +99,20 @@ def weighted_minkowski(x, y, w=_mock_ones, p=2):
         result += (w[i] * np.abs(x[i] - y[i])) ** p
 
     return result ** (1.0 / p)
+
+
+@numba.njit()
+def poincare(u, v):
+    """Poincare distance.
+
+    ..math::
+        \delta (u, v) = 2 \frac{ \lVert  u - v \rVert ^2 }{ ( 1 - \lVert  u \rVert ^2 ) ( 1 - \lVert  v \rVert ^2 ) }
+        D(x, y) = \operatorname{arcosh} (1+\delta (u,v))
+    """
+    sq_u_norm = np.sum(u * u)
+    sq_v_norm = np.sum(v * v)
+    sq_dist = np.sum(np.power(u - v, 2))
+    return np.arccosh(1 + 2 * (sq_dist / ((1 - sq_u_norm) * (1 - sq_v_norm))))
 
 
 @numba.njit()
@@ -359,6 +373,7 @@ named_distances = {
     "linfty": chebyshev,
     "linf": chebyshev,
     "minkowski": minkowski,
+    "poincare": poincare,
     # Standardised/weighted distances
     "seuclidean": standardised_euclidean,
     "standardised_euclidean": standardised_euclidean,

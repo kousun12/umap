@@ -4,3 +4,4 @@ venv
 .idea/umap.iml
 .idea/vcs.xml
 .idea/workspace.xml
+.idea/dictionaries
